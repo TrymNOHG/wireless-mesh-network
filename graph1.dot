@@ -1,0 +1,4 @@
+graph{
+    hello -- world [weight=5]
+    hi -- world [weight=1]
+}
