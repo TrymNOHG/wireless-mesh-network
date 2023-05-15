@@ -1,7 +1,5 @@
 # Mobile Wireless Mesh Network
 
-# Project Name
-
 ## CI/CD Solution
 
 **Description**: 
