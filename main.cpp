@@ -3,13 +3,13 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
 #include <boost/property_map/property_map.hpp>
-#include <boost/property_map/transform_value_property_map.hpp>
 
 // Vertex properties
-typedef boost::property < boost::vertex_name_t, std::string,
-        boost::property < boost::vertex_color_t, float > > vertex_p;
+typedef boost::property < boost::vertex_name_t, std::string > vertex_p;
 // Edge properties
-typedef boost::property < boost::edge_weight_t, double > edge_p;
+typedef boost::property < boost::edge_weight_t, double,
+        boost::property < boost::edge_weight2_t, double,
+        boost::property < boost::edge_color_t, std::string > > > edge_p;
 // Graph properties
 typedef boost::property < boost::graph_name_t, std::string > graph_p;
 // adjacency_list-based type
@@ -27,20 +27,25 @@ int main() {
             get(boost::vertex_name, graph);
     dp.property("node_id", name);
 
-    boost::property_map<graph_t, boost::vertex_color_t>::type mass =
-            get(boost::vertex_color, graph);
-    dp.property("mass", mass);
-
     boost::property_map<graph_t, boost::edge_weight_t>::type weight =
             get(boost::edge_weight, graph);
     dp.property("weight", weight);
 
+    boost::property_map<graph_t, boost::edge_weight_t>::type minlen =
+            get(boost::edge_weight, graph);
+    dp.property("minlen", weight);
+
+    boost::property_map<graph_t, boost::edge_weight2_t>::type penwidth =
+            get(boost::edge_weight2, graph);
+    dp.property("penwidth", penwidth);
+
+    boost::property_map<graph_t, boost::edge_color_t>::type color =
+            get(boost::edge_color, graph);
+    dp.property("color", color);
+
     // Use ref_property_map to turn a graph property into a property map
     boost::ref_property_map<graph_t*, std::string> gname(get_property(graph, boost::graph_name));
     dp.property("name", gname);
-
-    // Sample graph as an std::istream;
-    //std::istringstream gvgraph("digraph { graph [name=\"graphname\"]  a  c e [mass = 6.66] }");
 
     std::ifstream dotFile("../graph1.dot");
 
@@ -63,8 +68,13 @@ int main() {
         std::cerr << "Failed to open the output file." << std::endl;
         return 1;
     }
-    //boost::dynamic_property_writer dpw(dp, boost::make_assoc_property_map(dp));
 
-    write_graphviz_dp(std::cout, graph, dp);
+    write_graphviz_dp(outputFile, graph, dp);
+//    graph_t::edge_iterator it, end;
+//    std::tie(it, end) = boost::edges(graph);
+//    for (; it != end; ++it) {
+//        double edgeWeight = boost::get(weight, *it);
+//        std::cout << "Edge: " << edgeWeight << std::endl;
+//    }
     return 0;
 }
