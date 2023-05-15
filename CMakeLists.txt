@@ -2,5 +2,12 @@ cmake_minimum_required(VERSION 3.24)
 project(wireless_mesh_network)
 
 set(CMAKE_CXX_STANDARD 17)
-
+set(BOOST_ROOT "/opt/homebrew/Cellar/boost/1.81.0_1")
+set(Boost_INCLUDE_DIR /opt/homebrew/Cellar/boost/1.81.0_1/include)
+set(Boost_LIBRARY_DIR /opt/homebrew/Cellar/boost/1.81.0_1/lib)
+find_package(Boost 1.81.0)
+include_directories(${Boost_INCLUDE_DIR})
+if(NOT Boost_FOUND)
+    message(FATAL_ERROR "Could not find boost!")
+endif()
 add_executable(wireless_mesh_network main.cpp)
