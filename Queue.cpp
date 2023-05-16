@@ -1,6 +1,8 @@
 //
 // Created by Trym Hamer Gudvangen on 5/16/23.
 
+#ifndef WIRELESS_MESH_NETWORK_QUEUE
+#define WIRELESS_MESH_NETWORK_QUEUE
 #include "Queue.h"
 
 template<typename T>
@@ -80,5 +82,46 @@ void Queue<T>::shiftQueueForward() {
         rear = nullptr;
     }
 
-    delete temp;
 }
+
+template<typename T>
+void Queue<T>::placeNodeAtRear(Node* node) {
+    if (node == nullptr || node == rear) {
+        return;
+    }
+
+    Node* prevNode = nullptr;
+    Node* currNode = front;
+
+    while (currNode != nullptr && currNode != node) {
+        prevNode = currNode;
+        currNode = currNode->next;
+    }
+
+    if (currNode == nullptr) {
+        return;
+    }
+
+    if (prevNode != nullptr) {
+        prevNode->next = currNode->next;
+    } else {
+        front = currNode->next;
+    }
+
+    currNode->next = nullptr;
+    rear->next = currNode;
+    rear = currNode;
+}
+
+
+template<typename T>
+typename Queue<T>::Node *Queue<T>::getFrontNode() const {
+    return front;
+}
+
+template<typename T>
+typename Queue<T>::Node *Queue<T>::getRearNode() const {
+    return rear;
+}
+
+#endif // WIRELESS_MESH_NETWORK_QUEUE

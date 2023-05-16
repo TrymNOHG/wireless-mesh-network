@@ -1,7 +1,3 @@
-//
-// Created by Trym Hamer Gudvangen on 5/16/23.
-//
-
 #ifndef WIRELESS_MESH_NETWORK_QUEUE_H
 #define WIRELESS_MESH_NETWORK_QUEUE_H
 
@@ -9,7 +5,7 @@
 
 template<typename T>
 class Queue {
-private:
+public:
     struct Node {
         T data;
         Node* next;
@@ -17,6 +13,7 @@ private:
         explicit Node(const T& data) : data(data), next(nullptr) {}
     };
 
+private:
     Node* front;
     Node* rear;
     std::size_t size;
@@ -32,10 +29,14 @@ public:
     T pop();
 
     void shiftQueueForward();
+    void placeNodeAtRear(Node* node);
 
     void clear();
+
+    Node* getFrontNode() const;
+    Node* getRearNode() const;
 };
 
 #include "Queue.cpp"
 
-#endif //WIRELESS_MESH_NETWORK_QUEUE_H
+#endif // WIRELESS_MESH_NETWORK_QUEUE_H
