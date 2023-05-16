@@ -1,0 +1,4 @@
+graph{
+    hello:e -- world:w [weight=3, minlen=3, color=green]
+    hi -- world [weight=7, minlen=7, color=red]
+}
