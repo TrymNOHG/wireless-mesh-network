@@ -38,6 +38,8 @@ int main() {
     std::cout << "Enter the percentage of edges to be removed: ";
     std::cin >> percentage;
 
+    int numEdges = (numVertices * percentage / 100);
+
 
     boost::dynamic_properties dp;
 
@@ -70,7 +72,6 @@ int main() {
     outputFile.close();
 
     // Convert the DOT file to SVG using the dot command
-    std::cout << std::to_string(weight) << std::endl;
     std::string dotCommand = "dot -Tsvg -Elabel=" + std::to_string(weight) + " ../output.dot -o ../output.svg";
     int conversionStatus = std::system(dotCommand.c_str());
 
@@ -94,8 +95,28 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
     for(; vs.first != vs.second; ++vs.first){
         queue.push(*vs.first);
     }
-    boost::remove_vertex(2, graph);
-    boost::remove_edge(0, 1, graph);
+
+//    std::cout<< boost::out_degree(queue.getFrontNode()->data, graph) << std::endl;
+//    boost::remove_edge(queue.getFrontNode()->data, queue.getFrontNode()->next->data, graph);
+//    std::cout<< boost::out_degree(queue.getFrontNode()->data, graph) << std::endl;
+
+
+    while(1){
+        Queue<boost::adjacency_list<>::vertex_descriptor>::Node* first = queue.getFrontNode();
+        Queue<boost::adjacency_list<>::vertex_descriptor>::Node* second = queue.getFrontNode()->next;
+
+        while(!(boost::edge(first->data, second->data, graph).second)){
+            second = second->next;
+        }
+        if(boost::out_degree(first->data, graph)
+        <= numMinEdges || boost::out_degree(second->data, graph) <= numMinEdges) {
+            break;
+        }
+        boost::remove_edge(queue.getFrontNode()->data, queue.getFrontNode()->next->data, graph);
+
+        queue.placeNodeAtRear(first);
+        queue.placeNodeAtRear(second);
+    }
 
 }
 
