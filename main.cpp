@@ -6,7 +6,7 @@
 #include <boost/property_map/dynamic_property_map.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/graph/random.hpp>
-#include "Queue.h"
+#include "PriorityQueue.h"
 
 
 // Vertex properties
@@ -85,7 +85,7 @@ int main() {
 }
 
 void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
-    Queue<boost::adjacency_list<>::vertex_descriptor> queue;
+    PriorityQueue queue(graph);
 
     std::pair<boost::adjacency_list<>::vertex_iterator,
             boost::adjacency_list<>::vertex_iterator> vs = boost::vertices(graph);
@@ -93,26 +93,28 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
         queue.push(*vs.first);
     }
 
-//    std::cout<< boost::out_degree(queue.getFrontNode()->data, graph) << std::endl;
-//    boost::remove_edge(queue.getFrontNode()->data, queue.getFrontNode()->next->data, graph);
-//    std::cout<< boost::out_degree(queue.getFrontNode()->data, graph) << std::endl;
+//    std::cout<< boost::out_degree(queue.getFrontNode()->nodeDescriptor, graph) << std::endl;
+//    boost::remove_edge(queue.getFrontNode()->nodeDescriptor, queue.getFrontNode()->next->nodeDescriptor, graph);
+//    std::cout<< boost::out_degree(queue.getFrontNode()->nodeDescriptor, graph) << std::endl;
 
 
-    while(1){
-        Queue<boost::adjacency_list<>::vertex_descriptor>::Node* first = queue.getFrontNode();
-        Queue<boost::adjacency_list<>::vertex_descriptor>::Node* second = queue.getFrontNode()->next;
+    while (queue.getSize() >= 2) {
+        int currentIndex = 0;
+        PriorityQueue::Node* first = reinterpret_cast<PriorityQueue::Node *>(queue.peek());
+        PriorityQueue::Node* second = reinterpret_cast<PriorityQueue::Node *>(queue.getNodeByIndex(++currentIndex));
 
-        while(!(boost::edge(first->data, second->data, graph).second)){
-            second = second->next;
+        while (second != nullptr && !(boost::edge(first->nodeDescriptor, second->nodeDescriptor, graph).second)) {
+            second = reinterpret_cast<PriorityQueue::Node *>(queue.getNodeByIndex(++currentIndex));
         }
-        if(boost::out_degree(first->data, graph)
-        <= numMinEdges || boost::out_degree(second->data, graph) <= numMinEdges) {
+
+        if (second == nullptr || boost::out_degree(first->nodeDescriptor, graph) <= numMinEdges ||
+            boost::out_degree(second->nodeDescriptor, graph) <= numMinEdges) {
             break;
         }
-        boost::remove_edge(queue.getFrontNode()->data, queue.getFrontNode()->next->data, graph);
 
-        queue.placeNodeAtRear(first);
-        queue.placeNodeAtRear(second);
+        boost::remove_edge(first->nodeDescriptor, second->nodeDescriptor, graph);
+        //TODO: remove nodes and place back in queue, use the update method
+
     }
 
 }
