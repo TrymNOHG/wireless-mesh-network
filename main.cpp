@@ -44,6 +44,7 @@ int main() {
 
     int weight = 5;
     Graph graph = createCompleteGraph(numVertices, weight);
+    get_property(graph, boost::graph_name) = "fdp";
     edgeDistributionOptimizationAlgorithm(graph, numEdges);
 
     // Property map for the edge weight
@@ -52,7 +53,7 @@ int main() {
 
     // Use ref_property_map to turn a graph property into a property map
     boost::ref_property_map<Graph*, std::string> gname(get_property(graph, boost::graph_name));
-    dp.property("name", gname);
+    dp.property("layout", gname);
 
     // Vertex property: node_id
     boost::property_map<Graph, boost::vertex_name_t>::type nodeIdMap = boost::get(boost::vertex_name, graph);
