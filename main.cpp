@@ -6,6 +6,7 @@
 #include <boost/property_map/dynamic_property_map.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/graph/random.hpp>
+#include "Queue.h"
 
 
 // Vertex properties
@@ -24,28 +25,25 @@ typedef boost::adjacency_list<
 
 
 
+void edgeDistributionOptimizationAlgorithm(Graph &graph);
 Graph createCompleteGraph(int numVertices, int weight);
+void printEdges(Graph graph);
 
 int main() {
 
-    // Construct an empty graph and prepare the dynamic_property_maps.
+    int percentage;
+    int numVertices;
+    std::cout << "Enter number of drones ";
+    std::cin >> numVertices;
+    std::cout << "Enter the percentage of edges to be removed: ";
+    std::cin >> percentage;
+
+
     boost::dynamic_properties dp;
 
 
-//    // Property maps
-//    boost::property_map<GraphType, boost::vertex_name_t>::type name =
-//            get(boost::vertex_name, graph);
-//    dp.property("node_id", name);
-
-    int numVertices = 5;
     int weight = 5;
     Graph graph = createCompleteGraph(numVertices, weight);
-
-    // Print the edges of the graph
-    std::cout << "Edges of the graph:" << std::endl;
-    for (auto edge : boost::make_iterator_range(boost::edges(graph))) {
-        std::cout << boost::source(edge, graph) << " -- " << boost::target(edge, graph) << std::endl;
-    }
 
     // Property map for the edge weight
     boost::property_map<Graph, boost::edge_weight_t>::type weightMap = boost::get(boost::edge_weight, graph);
@@ -59,21 +57,6 @@ int main() {
     boost::property_map<Graph, boost::vertex_name_t>::type nodeIdMap = boost::get(boost::vertex_name, graph);
     dp.property("node_id", nodeIdMap);
 
-//
-//    // Read the graph from the input DOT file
-//    std::ifstream dotFile("../graph1.dot");
-//    if (!dotFile) {
-//        std::cerr << "Failed to open the dot file." << std::endl;
-//        return 1;
-//    }
-//
-//    bool status = read_graphviz(dotFile, graph, dp, "node_id");
-//    dotFile.close();
-//    if (!status) {
-//        std::cerr << "Failed to read the graph from the dot file." << std::endl;
-//        return 1;
-//    }
-//
     std::cout << "Graph has been read successfully." << std::endl;
 
     // Write the graph to the output DOT file
@@ -98,15 +81,24 @@ int main() {
         std::cout << "DOT to SVG conversion successful." << std::endl;
     }
 
-    //    graph_t::edge_iterator it, end;
-//    std::tie(it, end) = boost::edges(graph);
-//    for (; it != end; ++it) {
-//        double edgeWeight = boost::get(weight, *it);
-//        std::cout << "Edge: " << edgeWeight << std::endl;
-//    }
+
 
     return 0;
 }
+
+void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
+    Queue<boost::adjacency_list<>::vertex_descriptor> queue;
+
+    std::pair<boost::adjacency_list<>::vertex_iterator,
+            boost::adjacency_list<>::vertex_iterator> vs = boost::vertices(graph);
+    for(; vs.first != vs.second; ++vs.first){
+        queue.push(*vs.first);
+    }
+    boost::remove_vertex(2, graph);
+    boost::remove_edge(0, 1, graph);
+
+}
+
 
 Graph createCompleteGraph(int numVertices, int weight) {
     Graph graph;
@@ -126,5 +118,14 @@ Graph createCompleteGraph(int numVertices, int weight) {
 
     return graph;
 }
+
+void printGraph(Graph graph) {
+    // Print the edges of the graph
+    std::cout << "Edges of the graph:" << std::endl;
+    for (auto edge : boost::make_iterator_range(boost::edges(graph))) {
+        std::cout << boost::source(edge, graph) << " -- " << boost::target(edge, graph) << std::endl;
+    }
+}
+
 
 
