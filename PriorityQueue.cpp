@@ -73,6 +73,7 @@ void PriorityQueue::updateNodeByIndex(const unsigned int& index){
 
 std::shared_ptr<PriorityQueue::Node> PriorityQueue::getNodeByIndex(const unsigned int& index) {
     if (index >= getSize()) {
+        std::cout << "Index: " << index << std::endl;
         throw std::runtime_error("Index out of bounds.");
     }
 

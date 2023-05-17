@@ -1,10 +1,12 @@
 #include <iostream>
 #include <cstdlib>
 #include <random>
+#include <vector>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
 #include <boost/property_map/property_map.hpp>
+#include <boost/graph/connected_components.hpp>
 #include <boost/graph/random.hpp>
 #include "PriorityQueue.h"
 
@@ -85,6 +87,8 @@ int main() {
     return 0;
 }
 
+//TODO: need to check that by removing an edge, I am not creating a disconnected graph
+
 void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
     PriorityQueue queue(graph);
 
@@ -100,7 +104,7 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
         std::shared_ptr<PriorityQueue::Node> second = queue.getNodeByIndex(++currentIndex);
 
         while (second != nullptr && !(boost::edge(first->nodeDescriptor, second->nodeDescriptor, graph).second)
-        && currentIndex < queue.getSize()){
+        && currentIndex < queue.getSize() - 1){
             second = queue.getNodeByIndex(++currentIndex);
         }
 
@@ -109,10 +113,27 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
             break;
         }
 
+        // Temporarily remove the edge
         boost::remove_edge(first->nodeDescriptor, second->nodeDescriptor, graph);
-        queue.updateNodeByIndex(0);
-        queue.updateNodeByIndex(currentIndex);
+
+        // Check if the graph is still connected
+        std::vector<int> component(num_vertices(graph));
+        int num = connected_components(graph, &component[0]);
+
+        if (num > 1) {
+            // Graph is disconnected, re-add the edge
+            boost::add_edge(first->nodeDescriptor, second->nodeDescriptor, EdgeProperty(5), graph);
+        } else {
+            // Graph is still connected, update the queue
+            queue.updateNodeByIndex(0);
+            queue.updateNodeByIndex(currentIndex);
+        }
+
     }
+
+    //TODO: check logic necessary here
+    //Now I am left with the minimum number of edges without disconnecting the graph
+    //However, I can sometimes still optimize by removing unnecessary cycles
 
 }
 
