@@ -94,12 +94,6 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
         queue.push(*vs.first);
     }
 
-//    std::cout<< boost::out_degree(queue.getFrontNode()->nodeDescriptor, graph) << std::endl;
-//    boost::remove_edge(queue.getFrontNode()->nodeDescriptor, queue.getFrontNode()->next->nodeDescriptor, graph);
-//    std::cout<< boost::out_degree(queue.getFrontNode()->nodeDescriptor, graph) << std::endl;
-
-
-
     while (queue.getSize() >= 2) {
         int currentIndex = 0;
         std::shared_ptr<PriorityQueue::Node> first = queue.peek();
@@ -109,7 +103,6 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
         && currentIndex < queue.getSize()){
             second = queue.getNodeByIndex(++currentIndex);
         }
-
 
         if (second == nullptr || boost::out_degree(first->nodeDescriptor, graph) <= numMinEdges ||
             boost::out_degree(second->nodeDescriptor, graph) <= numMinEdges) {
