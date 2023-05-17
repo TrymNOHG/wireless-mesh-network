@@ -71,7 +71,7 @@ void PriorityQueue::updateNodeByIndex(const unsigned int& index){
 }
 
 
-std::shared_ptr<PriorityQueue::Node> PriorityQueue::getNodeByIndex(const unsigned int& index) const {
+std::shared_ptr<PriorityQueue::Node> PriorityQueue::getNodeByIndex(const unsigned int& index) {
     std::cout << index << std::endl;
     std::cout << getSize() << std::endl;
     if (index >= getSize()) {
@@ -79,15 +79,29 @@ std::shared_ptr<PriorityQueue::Node> PriorityQueue::getNodeByIndex(const unsigne
     }
 
     std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, NodeComparator> tempQueue = queue;
-
+    std::vector<std::shared_ptr<Node>> elements;
     for (unsigned int i = 0; i < index; i++) {
+        elements.emplace_back(tempQueue.top());
         tempQueue.pop();
     }
 
+    std::shared_ptr<Node> nodeByIndex = tempQueue.top();
+
+    // Reconstruct the heap with all the elements
+    elements.emplace_back(tempQueue.top());
+    while (!tempQueue.empty()) {
+        tempQueue.pop();
+        elements.emplace_back(tempQueue.top());
+    }
+
+    queue = std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, NodeComparator>(
+            elements.begin(), elements.end(), NodeComparator(&graph));
+
     std::cout << "Ok stuff is still working" << std::endl;
-    std::cout << "The node descriptor is: " << tempQueue.top()->nodeDescriptor << std::endl;
-    return std::make_shared<Node>(*tempQueue.top());
+    std::cout << "The node descriptor is: " << nodeByIndex->nodeDescriptor << std::endl;
+    return nodeByIndex;
 }
+
 
 
 void PriorityQueue::clear() {

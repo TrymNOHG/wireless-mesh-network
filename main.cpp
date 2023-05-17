@@ -119,7 +119,6 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
         boost::remove_edge(first->nodeDescriptor, second->nodeDescriptor, graph);
         queue.updateNodeByIndex(0);
         queue.updateNodeByIndex(currentIndex);
-
     }
 
 }

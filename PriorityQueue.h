@@ -44,7 +44,7 @@ public:
     unsigned int pop(const unsigned int& index);
     const std::shared_ptr<PriorityQueue::Node>& peek() const;
 
-    std::shared_ptr<Node> getNodeByIndex(const unsigned int& index) const;
+    std::shared_ptr<Node> getNodeByIndex(const unsigned int& index);
     void updateNodeByIndex(const unsigned int& index);
 
     void clear();
