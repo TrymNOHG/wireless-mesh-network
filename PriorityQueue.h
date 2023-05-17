@@ -24,12 +24,12 @@ private:
 
         explicit NodeComparator(const Graph* graph) : graph(graph) {}
 
-        bool operator()(const Node& node1, const Node& node2) const {
-            return boost::out_degree(node1.nodeDescriptor, *graph) < boost::out_degree(node2.nodeDescriptor, *graph);
+        bool operator()(const std::shared_ptr<Node>& node1, const std::shared_ptr<Node>& node2) const {
+            return boost::out_degree(node1->nodeDescriptor, *graph) < boost::out_degree(node2->nodeDescriptor, *graph);
         }
     };
 
-    std::priority_queue<Node, std::vector<Node>, NodeComparator> queue;
+    std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, NodeComparator> queue;
     const Graph& graph;
 
 public:
@@ -42,9 +42,9 @@ public:
     void push(const unsigned int& data);
     unsigned int pop();
     unsigned int pop(const unsigned int& index);
-    unsigned int peek();
+    const std::shared_ptr<PriorityQueue::Node>& peek() const;
 
-    unsigned int getNodeByIndex(const unsigned int& index) const;
+    std::shared_ptr<Node> getNodeByIndex(const unsigned int& index) const;
     void updateNodeByIndex(const unsigned int& index);
 
     void clear();

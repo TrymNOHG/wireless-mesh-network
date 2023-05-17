@@ -99,14 +99,17 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
 //    std::cout<< boost::out_degree(queue.getFrontNode()->nodeDescriptor, graph) << std::endl;
 
 
+
     while (queue.getSize() >= 2) {
         int currentIndex = 0;
-        PriorityQueue::Node* first = reinterpret_cast<PriorityQueue::Node *>(queue.peek());
-        PriorityQueue::Node* second = reinterpret_cast<PriorityQueue::Node *>(queue.getNodeByIndex(++currentIndex));
+        std::shared_ptr<PriorityQueue::Node> first = queue.peek();
+        std::shared_ptr<PriorityQueue::Node> second = queue.getNodeByIndex(++currentIndex);
 
-        while (second != nullptr && !(boost::edge(first->nodeDescriptor, second->nodeDescriptor, graph).second)) {
-            second = reinterpret_cast<PriorityQueue::Node *>(queue.getNodeByIndex(++currentIndex));
+        while (second != nullptr && !(boost::edge(first->nodeDescriptor, second->nodeDescriptor, graph).second)
+        && currentIndex < queue.getSize()){
+            second = queue.getNodeByIndex(++currentIndex);
         }
+
 
         if (second == nullptr || boost::out_degree(first->nodeDescriptor, graph) <= numMinEdges ||
             boost::out_degree(second->nodeDescriptor, graph) <= numMinEdges) {
@@ -114,7 +117,8 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
         }
 
         boost::remove_edge(first->nodeDescriptor, second->nodeDescriptor, graph);
-        //TODO: remove nodes and place back in queue, use the update method
+        queue.updateNodeByIndex(0);
+        queue.updateNodeByIndex(currentIndex);
 
     }
 

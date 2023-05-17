@@ -20,7 +20,7 @@ std::size_t PriorityQueue::getSize() const {
 }
 
 void PriorityQueue::push(const unsigned int& data) {
-    Node newNode(data);
+    std::shared_ptr<Node> newNode = std::make_shared<Node>(data);
     queue.push(newNode);
 }
 
@@ -29,22 +29,21 @@ unsigned int PriorityQueue::pop() {
         throw std::runtime_error("PriorityQueue is empty. Cannot pop.");
     }
 
-    unsigned int data = queue.top().nodeDescriptor;
+    unsigned int data = queue.top()->nodeDescriptor;
     queue.pop();
     return data;
 }
 
 unsigned int PriorityQueue::pop(const unsigned int& fileDescriptor) {
-    // Search for the node with the matching file descriptor
-    std::vector<Node> elements;
+    std::vector<std::shared_ptr<Node>> elements;
     unsigned int poppedData = 0;
 
     while (!queue.empty()) {
-        Node topNode = queue.top();
+        std::shared_ptr<Node> topNode = queue.top();
         queue.pop();
 
-        if (topNode.nodeDescriptor == fileDescriptor) {
-            poppedData = topNode.nodeDescriptor;
+        if (topNode->nodeDescriptor == fileDescriptor) {
+            poppedData = topNode->nodeDescriptor;
             break;
         }
 
@@ -52,18 +51,18 @@ unsigned int PriorityQueue::pop(const unsigned int& fileDescriptor) {
     }
 
     // Reconstruct the heap
-    queue = std::priority_queue<Node, std::vector<Node>, NodeComparator>(elements.begin(), elements.end(), NodeComparator(&graph));
-
+    queue = std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, NodeComparator>(
+            elements.begin(), elements.end(), NodeComparator(&graph));
     return poppedData;
 }
 
 
-unsigned int PriorityQueue::peek() {
+const std::shared_ptr<PriorityQueue::Node>& PriorityQueue::peek() const{
     if (isEmpty()) {
         throw std::runtime_error("PriorityQueue is empty. Cannot peek.");
     }
-    unsigned int data = queue.top().nodeDescriptor;
-    return data;
+
+    return queue.top();
 }
 
 void PriorityQueue::updateNodeByIndex(const unsigned int& index){
@@ -72,17 +71,23 @@ void PriorityQueue::updateNodeByIndex(const unsigned int& index){
 }
 
 
-unsigned int PriorityQueue::getNodeByIndex(const unsigned int& index) const {
+std::shared_ptr<PriorityQueue::Node> PriorityQueue::getNodeByIndex(const unsigned int& index) const {
+    std::cout << index << std::endl;
+    std::cout << getSize() << std::endl;
     if (index >= getSize()) {
         throw std::runtime_error("Index out of bounds.");
     }
 
-    std::priority_queue<Node, std::vector<Node>, NodeComparator> tempQueue = queue;
+    std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, NodeComparator> tempQueue = queue;
+
     for (unsigned int i = 0; i < index; i++) {
         tempQueue.pop();
     }
-    return tempQueue.top().nodeDescriptor;
-};
+
+    std::cout << "Ok stuff is still working" << std::endl;
+    std::cout << "The node descriptor is: " << tempQueue.top()->nodeDescriptor << std::endl;
+    return std::make_shared<Node>(*tempQueue.top());
+}
 
 
 void PriorityQueue::clear() {
