@@ -5,7 +5,7 @@
 #include <queue>
 #include <boost/graph/adjacency_list.hpp>
 
-typedef boost::property<boost::vertex_name_t, std::string> VertexProperty;
+typedef boost::property<boost::vertex_name_t, std::string, boost::property<boost::vertex_color_t, std::string > > VertexProperty;
 typedef boost::property<boost::edge_weight_t, double> EdgeProperty;
 typedef boost::property<boost::graph_name_t, std::string> GraphProperty;
 typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperty, EdgeProperty, GraphProperty> Graph;

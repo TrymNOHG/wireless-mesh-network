@@ -12,7 +12,8 @@
 
 
 // Vertex properties
-typedef boost::property<boost::vertex_name_t, std::string> VertexProperty;
+typedef boost::property<boost::vertex_name_t, std::string, boost::property<boost::vertex_color_t, std::string > > VertexProperty;
+
 // Edge properties
 typedef boost::property<
         boost::edge_weight_t, double
@@ -35,7 +36,7 @@ int main() {
     int numVertices;
     std::cout << "Enter number of drones ";
     std::cin >> numVertices;
-    std::cout << "Enter the percentage of edges to be removed: ";
+    std::cout << "Enter the percentage of other drones any given drone has connection to: ";
     std::cin >> percentage;
 
     int numEdges = (numVertices * percentage / 100);
@@ -61,6 +62,17 @@ int main() {
     boost::property_map<Graph, boost::vertex_name_t>::type nodeIdMap = boost::get(boost::vertex_name, graph);
     dp.property("node_id", nodeIdMap);
 
+    boost::property_map<Graph, boost::vertex_color_t>::type imageMap = boost::get(boost::vertex_color, graph);
+    dp.property("image", imageMap);
+
+    for (int i = 0; i < numVertices; ++i) {
+        imageMap[i] = "../drone.png";
+    }
+
+
+
+
+
     std::cout << "Graph has been read successfully." << std::endl;
 
     // Write the graph to the output DOT file
@@ -74,7 +86,7 @@ int main() {
     outputFile.close();
 
     // Convert the DOT file to SVG using the dot command
-    std::string dotCommand = "dot -Tsvg -Elabel=" + std::to_string(weight) + " ../output.dot -o ../output.svg";
+    std::string dotCommand = "dot -Tpng -Nwidth=3 -Nheight=3 ../output.dot -o ../output.png";
     int conversionStatus = std::system(dotCommand.c_str());
 
     if (conversionStatus != 0) {
@@ -143,7 +155,10 @@ Graph createCompleteGraph(int numVertices, int weight) {
 
     // Add vertices with node_id property
     for (int i = 0; i < numVertices; ++i) {
-        boost::add_vertex(VertexProperty("Drone:" + std::to_string(i)), graph);
+        VertexProperty vp("Drone:" + std::to_string(i));
+        boost::add_vertex(vp, graph);
+
+
     }
 
     // Add edges to create a complete undirected graph
