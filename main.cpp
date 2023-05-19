@@ -1,7 +1,9 @@
 #include <iostream>
 #include <cstdlib>
+#include <iostream>
 #include <random>
 #include <vector>
+
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
@@ -36,14 +38,18 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges);
 Graph createCompleteGraph(int numVertices, int weight);
 void printEdges(Graph graph);
 
-int main() {
-
-    int percentage;
-    int numVertices;
+int main(int argc, char **argv) {
+  int numVertices, percentage;
+  if (argc < 3) {
     std::cout << "Enter number of drones ";
     std::cin >> numVertices;
-    std::cout << "Enter the percentage of other drones any given drone has connection to: ";
+    std::cout << "Enter the percentage of other drones any given drone has "
+                 "connection to: ";
     std::cin >> percentage;
+  } else {
+    numVertices = atoi(argv[1]);
+    percentage = atoi(argv[2]);
+  }
 
     int numEdges = (numVertices * percentage / 100);
 
@@ -107,10 +113,21 @@ int main() {
     return 0;
 }
 
-//TODO: need to check that by removing an edge, I am not creating a disconnected graph
-
-void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
-    PriorityQueue queue(graph);
+/**
+ * This algorithm is a form for edge pruning in order to optimize the edge
+ * distribution. Additionally, in order to conform to the use-case of mesh
+ * networks, the algorithm takes into account whether graph is still completely
+ * connected.
+ *
+ * Another method that could be explored is starting from a minimum spanning
+ * tree and thereafter adding edges till the failure threshold is reached. This
+ * would be computationally cheaper; however, it could also result in a less
+ * resilient mesh network since redundancies (cycles) are less favored.
+ * @param graph
+ * @param numMinEdges
+ */
+void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges) {
+  PriorityQueue queue(graph);
 
     std::pair<boost::adjacency_list<>::vertex_iterator,
             boost::adjacency_list<>::vertex_iterator> vs = boost::vertices(graph);

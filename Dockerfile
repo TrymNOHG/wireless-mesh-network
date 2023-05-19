@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y \
     clang-format \
     g++ \
     python3 \
-    python3-pip
+    python3-pip \
+    libboost-all-dev \
+    cmake
 
 # Set up a workspace directory
 WORKDIR /workspace
@@ -17,8 +19,11 @@ WORKDIR /workspace
 # Copy your project files into the container
 COPY . .
 
-# Set the default command to run Clang-Format, Clang-Tidy, and Clang Static Analyzer on the project
-CMD ["bash", "-c", "clang-format -i $(find . -name '*.cpp' -o -name '*.hpp') && \
-                      clang-tidy -p build -- $(find . -name '*.cpp' -o -name '*.hpp') && \
-                      clang++ -o myapp $(find . -name '*.cpp') && \
-                      scan-build clang++ -o myapp $(find . -name '*.cpp')"]
+# Copy the script into the container
+COPY script.sh .
+
+# Make the script executable
+RUN chmod +x script.sh
+
+# Set the default command to run the script
+CMD ["./script.sh"]
