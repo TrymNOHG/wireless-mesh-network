@@ -141,7 +141,7 @@ Remember to log out and back in for this to take effect.
 
    By utilizing the built-in IDE, you can take advantage of its integrated development environment and easily manage the project.
 
-   **Option 2: Docker**
+   **Option 2: Docker (Coming Soon)**
 
    If you prefer to use Docker for running the application, follow these steps:
 
