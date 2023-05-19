@@ -10,7 +10,13 @@
 #include <boost/graph/random.hpp>
 #include "PriorityQueue.h"
 
-
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+std::string Command1 = "../output.png";
+#elif __APPLE__
+std::string Command1 = "open ../output.png";
+#elif __linux
+std::string Command1 = "xdg-open ../output.png";
+#endif
 // Vertex properties
 typedef boost::property<boost::vertex_name_t, std::string, boost::property<boost::vertex_color_t, std::string > > VertexProperty;
 
@@ -94,6 +100,8 @@ int main() {
         // Handle the error appropriately
     } else {
         std::cout << "DOT to SVG conversion successful." << std::endl;
+        int displayImage = std::system(Command1.c_str());
+
     }
 
     return 0;
