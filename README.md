@@ -55,9 +55,100 @@ In considerations: discuss why we chose DRS over AODV.
 
 [Describe any external dependencies used in your project. Include a brief description of each dependency and how it was utilized.]
 
-## Installation
+# Installation Guide
 
-[Provide step-by-step instructions for installing and setting up your project. Include any prerequisites, software versions, or configuration steps.]
+This guide will walk you through the steps required to set up and install the wireless_mesh_network project on your computer.
+
+## Prerequisites
+
+Before you begin the installation, please ensure you have the following software installed:
+
+- Boost Library (version 1.74.0 or above)
+- Graphviz 
+- Docker
+
+These can be installed using your package manager. 
+
+For MacOS users with Homebrew installed:
+
+`brew install boost`
+
+`brew install graphviz`
+
+`brew install --cask docker`
+
+For Ubuntu/Debian Linux users:
+
+`sudo apt-get install libboost-all-dev`
+
+`sudo apt-get install graphviz`
+
+`sudo apt-get install docker.io`
+
+For Fedora Linux users:
+
+`sudo dnf install boost-devel`
+
+`sudo dnf install graphviz`
+
+`sudo dnf install docker`
+
+Ensure that Docker is running on your system after installation. For MacOS and Windows users, you may have to start it manually using the Docker Desktop application. For Linux users, you can start it with the following command:
+
+`sudo systemctl start docker`
+
+Also, remember to add your user to the docker group to avoid having to use 'sudo' every time you run a Docker command:
+
+`sudo usermod -aG docker $USER`
+
+Remember to log out and back in for this to take effect.
+
+
+## Installation Steps
+
+1. **Clone the repository**
+   
+   Clone the wireless_mesh_network repository to your local machine.
+
+   git clone [https://github.com/your-username/wireless_mesh_network.git](https://github.com/TrymNOHG/wireless-mesh-network.git)
+    
+2. **Navigate to the project directory**
+
+  
+  Change to the `wireless_mesh_network` directory.
+
+  `cd wireless_mesh_network`
+
+
+3. **Build the Docker Image**
+
+  Build the Docker image using the provided Dockerfile.
+
+  `docker build -t mesh-ci-image .`
+
+
+4. **Run the Docker Image**
+
+  Run the Docker image you just built.
+
+  `docker run --rm -v "$(pwd):/workspace" mesh-ci-image`
+
+
+The `-v "$(pwd):/workspace"` option mounts the current directory (the `wireless_mesh_network` directory) inside the Docker container at the `/workspace` location.
+
+That's it! You have now successfully installed and set up the wireless_mesh_network project. 
+
+## Troubleshooting
+
+If you encounter any issues during the installation, please check the following:
+
+- Ensure that you have all the required software (Boost, Graphviz, and Docker) installed on your machine.
+- Ensure that Docker is running.
+- If you get a "Could not find boost!" error, make sure that the Boost library is installed and the version is 1.74.0 or higher.
+
+If you still encounter issues, please open an issue on the GitHub repository.
+
+
 
 ## Usage
 
