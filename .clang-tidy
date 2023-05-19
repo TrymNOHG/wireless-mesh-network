@@ -1,4 +1,4 @@
-Checks:          '-*,google-*'
+Checks:          '-*,google-*,-boost'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     google
