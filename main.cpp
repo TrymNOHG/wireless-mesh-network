@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
     int weight = 5;
     Graph graph = createCompleteGraph(numVertices, weight);
-    get_property(graph, boost::graph_name) = "fdp";
+    get_property(graph, boost::graph_name) = "sfdp";
     edgeDistributionOptimizationAlgorithm(graph, numEdges);
 
     // Property map for the edge weight
