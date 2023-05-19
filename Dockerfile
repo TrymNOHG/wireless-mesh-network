@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     g++ \
     python3 \
     python3-pip \
-    libboost-all-dev
+    libboost-all-dev \
+    cmake
 
 # Set up a workspace directory
 WORKDIR /workspace

@@ -29,14 +29,18 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges);
 Graph createCompleteGraph(int numVertices, int weight);
 void printEdges(Graph graph);
 
-int main() {
-  int percentage;
-  int numVertices;
-  std::cout << "Enter number of drones ";
-  std::cin >> numVertices;
-  std::cout << "Enter the percentage of other drones any given drone has "
-               "connection to: ";
-  std::cin >> percentage;
+int main(int argc, char **argv) {
+  int numVertices, percentage;
+  if (argc < 3) {
+    std::cout << "Enter number of drones ";
+    std::cin >> numVertices;
+    std::cout << "Enter the percentage of other drones any given drone has "
+                 "connection to: ";
+    std::cin >> percentage;
+  } else {
+    numVertices = atoi(argv[1]);
+    percentage = atoi(argv[2]);
+  }
 
   int numEdges = (numVertices * percentage / 100);
 
