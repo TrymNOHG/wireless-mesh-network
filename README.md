@@ -127,16 +127,39 @@ Remember to log out and back in for this to take effect.
   `docker build -t mesh-ci-image .`
 
 
-4. **Run the Docker Image**
+4. **Running the Application**
 
-  Run the Docker image you just built.
+   You have two options to run the application: using the built-in IDE or running it with Docker.
 
-  `docker run --rm -v "$(pwd):/workspace" mesh-ci-image`
+   **Option 1: Built-in IDE (Preferred)**
 
+   The preferred method is to run the application using the built-in IDE. Follow these steps:
 
-The `-v "$(pwd):/workspace"` option mounts the current directory (the `wireless_mesh_network` directory) inside the Docker container at the `/workspace` location.
+   1. Open the wireless_mesh_network project in your preferred IDE.
+   2. Configure the necessary project settings and dependencies as per the IDE's guidelines.
+   3. Build and run the application from within the IDE.
 
-That's it! You have now successfully installed and set up the wireless_mesh_network project. 
+   By utilizing the built-in IDE, you can take advantage of its integrated development environment and easily manage the project.
+
+   **Option 2: Docker**
+
+   If you prefer to use Docker for running the application, follow these steps:
+
+   1. Ensure Docker is installed on your system.
+   2. Open a terminal or command prompt.
+   3. Navigate to the root directory of the project (`wireless_mesh_network`).
+   4. Execute the following command:
+      
+      ```
+      docker run --rm -v "$(pwd):/workspace" mesh-ci-image
+      ```
+
+      This command runs the Docker image you just built and mounts the current directory (`wireless_mesh_network`) inside the container at the `/workspace` location.
+
+   Running the application with Docker provides an alternative option for execution, enabling a consistent and isolated runtime environment.
+
+   Congratulations! You have successfully installed and set up the wireless_mesh_network project. Choose the option that best suits your requirements and proceed with running the application accordingly.
+
 
 ## Troubleshooting
 
