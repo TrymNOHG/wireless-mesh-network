@@ -1,19 +1,22 @@
 #include <iostream>
 #include <cstdlib>
+#include <random>
+#include <vector>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
 #include <boost/property_map/property_map.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/graph/random.hpp>
+#include "PriorityQueue.h"
+
 
 // Vertex properties
-typedef boost::property<boost::vertex_name_t, std::string> VertexProperty;
+typedef boost::property<boost::vertex_name_t, std::string, boost::property<boost::vertex_color_t, std::string > > VertexProperty;
+
 // Edge properties
 typedef boost::property<
-        boost::edge_weight_t, double,
-        boost::property<
-                boost::edge_weight2_t, double,
-                boost::property<boost::edge_color_t, std::string>
-        >
+        boost::edge_weight_t, double
 > EdgeProperty;
 // Graph properties
 typedef boost::property<boost::graph_name_t, std::string> GraphProperty;
@@ -21,47 +24,54 @@ typedef boost::property<boost::graph_name_t, std::string> GraphProperty;
 typedef boost::adjacency_list<
         boost::vecS, boost::vecS, boost::undirectedS,
         VertexProperty, EdgeProperty, GraphProperty
-> GraphType;
+> Graph;
+
+void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges);
+Graph createCompleteGraph(int numVertices, int weight);
+void printEdges(Graph graph);
 
 int main() {
-    // Construct an empty graph and prepare the dynamic_property_maps.
-    GraphType graph;
+
+    int percentage;
+    int numVertices;
+    std::cout << "Enter number of drones ";
+    std::cin >> numVertices;
+    std::cout << "Enter the percentage of other drones any given drone has connection to: ";
+    std::cin >> percentage;
+
+    int numEdges = (numVertices * percentage / 100);
+
+
     boost::dynamic_properties dp;
 
-    // Property maps
-    boost::property_map<GraphType, boost::vertex_name_t>::type name =
-            get(boost::vertex_name, graph);
-    dp.property("node_id", name);
 
-    boost::property_map<GraphType, boost::edge_weight_t>::type weight =
-            get(boost::edge_weight, graph);
-    dp.property("weight", weight);
+    int weight = 5;
+    Graph graph = createCompleteGraph(numVertices, weight);
+    get_property(graph, boost::graph_name) = "fdp";
+    edgeDistributionOptimizationAlgorithm(graph, numEdges);
 
-    boost::property_map<GraphType, boost::edge_weight2_t>::type minlen =
-            get(boost::edge_weight2, graph);
-    dp.property("minlen", minlen);
-
-    boost::property_map<GraphType, boost::edge_color_t>::type color =
-            get(boost::edge_color, graph);
-    dp.property("color", color);
+    // Property map for the edge weight
+    boost::property_map<Graph, boost::edge_weight_t>::type weightMap = boost::get(boost::edge_weight, graph);
+    dp.property("weight", weightMap);
 
     // Use ref_property_map to turn a graph property into a property map
-    boost::ref_property_map<GraphType*, std::string> gname(get_property(graph, boost::graph_name));
-    dp.property("name", gname);
+    boost::ref_property_map<Graph*, std::string> gname(get_property(graph, boost::graph_name));
+    dp.property("layout", gname);
 
-    // Read the graph from the input DOT file
-    std::ifstream dotFile("../graph1.dot");
-    if (!dotFile) {
-        std::cerr << "Failed to open the dot file." << std::endl;
-        return 1;
+    // Vertex property: node_id
+    boost::property_map<Graph, boost::vertex_name_t>::type nodeIdMap = boost::get(boost::vertex_name, graph);
+    dp.property("node_id", nodeIdMap);
+
+    boost::property_map<Graph, boost::vertex_color_t>::type imageMap = boost::get(boost::vertex_color, graph);
+    dp.property("image", imageMap);
+
+    for (int i = 0; i < numVertices; ++i) {
+        imageMap[i] = "../drone.png";
     }
 
-    bool status = read_graphviz(dotFile, graph, dp, "node_id");
-    dotFile.close();
-    if (!status) {
-        std::cerr << "Failed to read the graph from the dot file." << std::endl;
-        return 1;
-    }
+
+
+
 
     std::cout << "Graph has been read successfully." << std::endl;
 
@@ -76,7 +86,7 @@ int main() {
     outputFile.close();
 
     // Convert the DOT file to SVG using the dot command
-    std::string dotCommand = "dot -Tsvg ../output.dot -o ../output.svg";
+    std::string dotCommand = "dot -Tpng -Nwidth=3 -Nheight=3 ../output.dot -o ../output.png";
     int conversionStatus = std::system(dotCommand.c_str());
 
     if (conversionStatus != 0) {
@@ -86,12 +96,88 @@ int main() {
         std::cout << "DOT to SVG conversion successful." << std::endl;
     }
 
-    //    graph_t::edge_iterator it, end;
-//    std::tie(it, end) = boost::edges(graph);
-//    for (; it != end; ++it) {
-//        double edgeWeight = boost::get(weight, *it);
-//        std::cout << "Edge: " << edgeWeight << std::endl;
-//    }
-
     return 0;
 }
+
+//TODO: need to check that by removing an edge, I am not creating a disconnected graph
+
+void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges){
+    PriorityQueue queue(graph);
+
+    std::pair<boost::adjacency_list<>::vertex_iterator,
+            boost::adjacency_list<>::vertex_iterator> vs = boost::vertices(graph);
+    for(; vs.first != vs.second; ++vs.first){
+        queue.push(*vs.first);
+    }
+
+    while (queue.getSize() >= 2) {
+        int currentIndex = 0;
+        std::shared_ptr<PriorityQueue::Node> first = queue.peek();
+        std::shared_ptr<PriorityQueue::Node> second = queue.getNodeByIndex(++currentIndex);
+
+        while (second != nullptr && !(boost::edge(first->nodeDescriptor, second->nodeDescriptor, graph).second)
+        && currentIndex < queue.getSize() - 1){
+            second = queue.getNodeByIndex(++currentIndex);
+        }
+
+        if (second == nullptr || boost::out_degree(first->nodeDescriptor, graph) <= numMinEdges ||
+            boost::out_degree(second->nodeDescriptor, graph) <= numMinEdges) {
+            break;
+        }
+
+        // Temporarily remove the edge
+        boost::remove_edge(first->nodeDescriptor, second->nodeDescriptor, graph);
+
+        // Check if the graph is still connected
+        std::vector<int> component(num_vertices(graph));
+        int num = connected_components(graph, &component[0]);
+
+        if (num > 1) {
+            // Graph is disconnected, re-add the edge
+            boost::add_edge(first->nodeDescriptor, second->nodeDescriptor, EdgeProperty(5), graph);
+        } else {
+            // Graph is still connected, update the queue
+            queue.updateNodeByIndex(0);
+            queue.updateNodeByIndex(currentIndex);
+        }
+
+    }
+
+    //TODO: check logic necessary here
+    //Now I am left with the minimum number of edges without disconnecting the graph
+    //However, I can sometimes still optimize by removing unnecessary cycles
+
+}
+
+
+Graph createCompleteGraph(int numVertices, int weight) {
+    Graph graph;
+
+    // Add vertices with node_id property
+    for (int i = 0; i < numVertices; ++i) {
+        VertexProperty vp("Drone:" + std::to_string(i));
+        boost::add_vertex(vp, graph);
+
+
+    }
+
+    // Add edges to create a complete undirected graph
+    for (int i = 0; i < numVertices; ++i) {
+        for (int j = i + 1; j < numVertices; ++j) {
+            boost::add_edge(i, j, EdgeProperty(weight), graph);
+        }
+    }
+
+    return graph;
+}
+
+void printGraph(Graph graph) {
+    // Print the edges of the graph
+    std::cout << "Edges of the graph:" << std::endl;
+    for (auto edge : boost::make_iterator_range(boost::edges(graph))) {
+        std::cout << boost::source(edge, graph) << " -- " << boost::target(edge, graph) << std::endl;
+    }
+}
+
+
+
