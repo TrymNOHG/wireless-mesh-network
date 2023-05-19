@@ -12,7 +12,15 @@
 
 These were all run through a docker file.
 
-**Last Run**: [Insert link to the latest CI/CD run or build status badge]
+**Last Run**: 
+
+Link to the last pipeline ran:
+
+https://github.com/TrymNOHG/wireless-mesh-network/actions/runs/5025551063
+
+Link to all workflows:
+
+https://github.com/TrymNOHG/wireless-mesh-network/actions/workflows/main.yml
 
 ## Problem Introduction
 
@@ -69,7 +77,6 @@ Boost graph library (https://www.boost.org/doc/libs/1_80_0/libs/graph/doc/index.
 Graphviz (https://graphviz.org/): Graph visualization library. By converting our graph to a .dot file graphviz can vizulise it as a png with the correct layout. Here sfdp(Scalable Force-Directed Placement) is used for vertex placement.
 
 
-## Installation
 # Installation Guide
 
 This guide will walk you through the steps required to set up and install the wireless_mesh_network project on your computer.
