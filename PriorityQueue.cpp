@@ -14,9 +14,9 @@ PriorityQueue::PriorityQueue(const Graph& graph)
     : queue(NodeComparator(&graph)), graph(graph) {}
 
 /**
-* @brief Destroys the PriorityQueue object.
-* Clears the queue.
-*/
+ * @brief Destroys the PriorityQueue object.
+ * Clears the queue.
+ */
 PriorityQueue::~PriorityQueue() {
   clear();
 }
