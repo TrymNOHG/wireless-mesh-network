@@ -132,7 +132,7 @@ Remember to log out and back in for this to take effect.
 
    Clone the wireless_mesh_network repository to your local machine.
 
-   git clone [https://github.com/your-username/wireless_mesh_network.git](https://github.com/TrymNOHG/wireless-mesh-network.git)
+   git clone [https://github.com/TrymNOHG/wireless_mesh_network.git](https://github.com/TrymNOHG/wireless-mesh-network.git)
 
 2. **Navigate to the project directory**
 
