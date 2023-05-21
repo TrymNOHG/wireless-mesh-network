@@ -36,6 +36,7 @@ typedef boost::adjacency_list<
 
 void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges);
 Graph createCompleteGraph(int numVertices, int weight);
+int numMaxEdges(int numVertices);
 void printEdges(Graph graph);
 
 int main(int argc, char **argv) {
@@ -51,8 +52,7 @@ int main(int argc, char **argv) {
     percentage = atoi(argv[2]);
   }
 
-    int numEdges = (numVertices * percentage / 100);
-
+    int numEdges = ((numVertices - 1) * percentage / 100);
 
     boost::dynamic_properties dp;
 
@@ -127,6 +127,12 @@ int main(int argc, char **argv) {
  * @param numMinEdges
  */
 void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges) {
+
+  if(numMinEdges <= 0){
+    std::cerr << "With this percentage, the number of edges will be " + std::to_string(numMinEdges) + ". This will result in a disconnected graph." << std::endl;
+    exit(1);
+  }
+
   PriorityQueue queue(graph);
 
     std::pair<boost::adjacency_list<>::vertex_iterator,
@@ -168,13 +174,14 @@ void edgeDistributionOptimizationAlgorithm(Graph &graph, int numMinEdges) {
 
     }
 
-    //TODO: check logic necessary here
-    //Now I am left with the minimum number of edges without disconnecting the graph
-    //However, I can sometimes still optimize by removing unnecessary cycles
-
 }
 
-
+/**
+ * This method creates a graph where every node is connected to every other node.
+ * @param numVertices Number of nodes in the graph, given as an int.
+ * @param weight      The weight of each edge, given as an int.
+ * @return            The complete graph.
+ */
 Graph createCompleteGraph(int numVertices, int weight) {
     Graph graph;
 
@@ -196,7 +203,20 @@ Graph createCompleteGraph(int numVertices, int weight) {
     return graph;
 }
 
-void printGraph(Graph graph) {
+/**
+ * This method returns the number of edges in a complete graph.
+ * @param numVertices Number of nodes in the graph, given as an int.
+ * @return            The number of edges in a complete graph.
+ */
+int numMaxEdges(int numVertices){
+  return (numVertices * (numVertices - 1)) / 2;
+}
+
+/**
+ * This method prints the edges of the graph.
+ * @param graph The graph to print the edges of.
+ */
+void printEdgesOfGraph(Graph graph) {
     // Print the edges of the graph
     std::cout << "Edges of the graph:" << std::endl;
     for (auto edge : boost::make_iterator_range(boost::edges(graph))) {
